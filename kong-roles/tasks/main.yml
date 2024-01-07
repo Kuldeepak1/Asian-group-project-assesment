@@ -1,50 +1,62 @@
 ---
-- name: Install required dependencies
-  package:
-    name: "{{ item }}"
+- name: Install dependencies
+  apt:
+    name: "{{ kong_dependencies }}"
     state: present
-  loop:
-    - git
-    - unzip
-    - wget
-    - netcat
-    - lua5.1
-    - openssl
-    - libpcre3
-    - dnsmasq
 
-- name: Clone Kong source code from GitHub
-  git:
-    repo: https://github.com/Kong/kong.git
-    dest: /usr/src/kong
-    version: main  # Replace with the desired branch or tag
+- name: Download Kong source
+  get_url:
+    url: "{{ kong_source_url }}"
+    dest: /tmp/kong-{{ kong_version }}.tar.gz
 
-- name: Build and install Kong
-  command: |
-    make install
-  args:
-    chdir: /usr/src/kong
-  become: yes
+- name: Extract source
+  unarchive:
+    src: /tmp/kong-{{ kong_version }}.tar.gz
+    dest: /opt
+    remote_src: yes
 
-- name: Configure Kong
-  copy:
-    src: "{{ playbook_dir }}/templates/kong.conf"
-    dest: /etc/kong/kong.conf
-  notify: Restart Kong
+- name: Build Kong
+  make:
+    chdir: /opt/kong-{{ kong_version }}
 
-- name: Create Kong systemd service file
+- name: Create symlink for Kong executable
+  file:
+    src: /opt/kong-{{ kong_version }}/bin/kong
+    dest: /usr/local/bin/kong
+    state: link
+
+- name: Create Kong configuration directory
+  file:
+    path: /etc/kong
+    state: directory
+    owner: kong
+    group: kong
+
+- name: Create Kong data directory
+  file:
+    path: /var/lib/kong
+    state: directory
+    owner: kong
+    group: kong
+
+- name: Create Kong logs directory
+  file:
+    path: /var/log/kong
+    state: directory
+    owner: kong
+    group: kong
+
+- name: Create Kong startup script
   template:
-    src: "{{ playbook_dir }}/templates/kong.service.j2"
+    src: kong.service.j2
     dest: /etc/systemd/system/kong.service
-  notify: Reload systemd
+  notify: reload systemd
 
-- name: Start and enable Kong service
-  systemd:
+- name: Create Kong user
+  user:
+    name: kong
+
+- name: Start Kong service
+  service:
     name: kong
     state: started
-    enabled: yes
-
-- name: Reload Kong service
-  command: systemctl reload kong
-  ignore_errors: yes
-  become: yes
