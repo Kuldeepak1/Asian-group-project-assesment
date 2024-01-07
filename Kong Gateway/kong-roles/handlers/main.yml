@@ -1,6 +1,0 @@
----
-# handlers file for install_kong_source
-
-- name: reload systemd
-  systemd:
-    daemon_reload: yes
