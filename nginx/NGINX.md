@@ -58,8 +58,9 @@ Create ```/var/www/html/index.html``` file with below content:
 <html>
 <body>
 
-<h1>My First Heading</h1>
-<p>My first paragraph.</p>
+<h1>We are testing Nginx Load balancing...</h1>
+<h2>My name is Kuldeepak</h2>
+<p>Nginx test successful...</p>
 
 </body>
 </html>
