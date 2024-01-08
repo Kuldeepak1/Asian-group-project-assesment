@@ -103,7 +103,7 @@ Restart the Nginx
 ```
 curl backend1.kuldeepak.com
 ```
-test the loadbalencing with curl
+Test the loadbalancing with curl
 ```
 curl backend1.kuldeepak.com
 # Or
