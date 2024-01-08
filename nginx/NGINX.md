@@ -122,3 +122,10 @@ You will get same output as below:
 </body>
 </html>
 ```
+
+Open Nginx on Firewalld
+```
+firewall-cmd --permanent --add-service=http
+firewall-cmd --permanent --add-service=https
+systemctl restart firewalld
+```
