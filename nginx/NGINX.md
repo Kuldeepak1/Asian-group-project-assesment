@@ -81,14 +81,14 @@ Configure Load Balancing by updating ```vi /etc/nginx/nginx.conf``` as below
 ```
 http {
     upstream backend {
-        server backend1.example.com;
-        server backend2.example.com;
+        server backend1.kuldeepak.com;
+        server backend2.kuldeepak.com;
         # Add more backend servers as needed
     }
 
     server {
         listen 80;
-        server_name example.com;
+        server_name kuldeepak.com;
 
         location / {
             proxy_pass http://backend;
@@ -101,7 +101,7 @@ http {
 
 Restart the Nginx
 ```
-curl backend1.kuldeepak.com
+/usr/sbin/nginx -s reload
 ```
 Test the loadbalancing with curl
 ```
